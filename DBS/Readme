@@ -1,0 +1,5 @@
+ This is a project start from 2017/08/29 by Zhaning Gao for Temporal Action Detection
+
+ The main idea is to build the detection task as a sematic segmentation task on the video imprint structure.
+
+ 1. extract the rgb-CNN and flow-CNN feature maps from UCF101 and THUMOS14's validation set based on TSN model.
