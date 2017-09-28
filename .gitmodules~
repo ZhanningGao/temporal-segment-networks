@@ -6,6 +6,6 @@
 	url = https://github.com/yjxiong/caffe
 	branch=action_recog
 [submodule "SkeNet/keras_Realtime_Multi-Person_Pose_Estimation"]
-	path = SkeNet/keras_Realtime_Multi-Person_Pose_Estimation
+	path = lib/caffe-action
 	url = https://github.com/ZhanningGao/keras_Realtime_Multi-Person_Pose_Estimation
 	branch=master
