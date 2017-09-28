@@ -3,14 +3,13 @@ import cv2
 import numpy as np
 
 frames = []
-img1 = cv2.imread('/home/gzn/code/temporal-segment-networks/3rd-party/opencv-2.4.13/samples/gpu/basketball1.png')
-img2 = cv2.imread('/home/gzn/code/temporal-segment-networks/3rd-party/opencv-2.4.13/samples/gpu/basketball2.png')
+img1 = cv2.imread('/home/zpengfei/opencv-2.4.13/samples/gpu/basketball1.png')
+img2 = cv2.imread('/home/zpengfei/opencv-2.4.13/samples/gpu/basketball2.png')
 
 frames.append(img1.tostring())
 frames.append(img2.tostring())
 
 print img1.shape
-
 
 denFlow = DenFlow.TVL1FlowExtractor(20)
 denFlow.set_device(0)
@@ -27,5 +26,3 @@ cv2.imshow('test1',flow_img1.reshape([480,640,1]))
 cv2.imshow('test2',img1)
 cv2.imshow('test3',img2)
 cv2.waitKey()
-
-np.tr

@@ -1,7 +1,7 @@
 % convert frame labels to EP map labels
 % updated by Zhanning Gao 09/10/2017 --- All for MT&G ---
 
-EPPath = '/data3_alpha/datasets/UCF20/EP-TSN/EP_E48W7Dim128_var_0.1_init';
+EPPath = '/data3_alpha/datasets/UCF20/EP-TSN/EP_E64W7Dim128_var_0.1_init';
 
 mat_name = dir(fullfile(EPPath, '*.mat'));
 

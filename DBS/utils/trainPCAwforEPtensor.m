@@ -8,7 +8,7 @@ subset = 'val'; % 'val' or 'test'
 tau = 1;
 
 % EPmap path
-EPPath = '/data3_alpha/datasets/TH14/EP-TSN/EP_E48W7Dim128_onInit';
+EPPath = '/data3_alpha/datasets/TH14/EP-TSN/EP_E64W7Dim128_onInit';
 
 % video info path
 video_info_path = '../data';

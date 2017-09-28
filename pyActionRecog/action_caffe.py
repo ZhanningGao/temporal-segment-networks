@@ -2,10 +2,48 @@ import sys
 
 
 import caffe
-from caffe.io import oversample, mirrorsample
+from caffe.io import oversample
 import numpy as np
 from utils.io import flow_stack_oversample, fast_list2arr
 import cv2
+
+def mirrorsample(images, crop_dims):
+    """
+    Crop images into the four corners, center, and their mirrored versions.
+
+    Parameters
+    ----------
+    image : iterable of (H x W x K) ndarrays
+    crop_dims : (height, width) tuple for the crops.
+
+    Returns
+    -------
+    crops : (10*N x H x W x K) ndarray of crops for number of inputs N.
+    """
+    # Dimensions and center.
+    im_shape = np.array(images[0].shape)
+    crop_dims = np.array(crop_dims)
+    im_center = im_shape[:2] / 2.0
+
+    # Make crop coordinates
+    crops_ix = np.empty((1, 4), dtype=int)
+
+    crops_ix[0] = np.tile(im_center, (1, 2)) + np.concatenate([
+        -crop_dims / 2.0,
+         crop_dims / 2.0
+    ])
+    crops_ix = np.tile(crops_ix, (2, 1))
+
+    # Extract crops
+    crops = np.empty((2 * len(images), crop_dims[0], crop_dims[1],
+                      im_shape[-1]), dtype=np.float32)
+    ix = 0
+    for im in images:
+        for crop in crops_ix:
+            crops[ix] = im[crop[0]:crop[2], crop[1]:crop[3], :]
+            ix += 1
+        crops[ix-1:ix] = crops[ix-1:ix, :, ::-1, :]  # flip for mirrors
+    return crops
 
 
 class CaffeNet(object):

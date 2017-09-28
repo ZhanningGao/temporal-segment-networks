@@ -9,10 +9,10 @@ for  i = 1:2% 'val' or 'test'
     tau = 1;
     
     % EPmap path
-    EPPath = '/data3_alpha/datasets/TH14/EP-TSN/EP_E48W7Dim128_onInit';
+    EPPath = '/data3_alpha/datasets/TH14/EP-TSN/EP_E64W7Dim128_onInit';
     
     % extra data path
-    EXTPath = '/data3_alpha/datasets/UCF20/EP-TSN/EP_E48W7Dim128_var_0.1_init';
+    EXTPath = '/data3_alpha/datasets/UCF20/EP-TSN/EP_E64W7Dim128_var_0.1_init';
     %BGPath = '/data3_alpha/datasets/TH14/BG-EP-TSN/EP_E32W7Dim128_onInit';
     
     % load EP data
