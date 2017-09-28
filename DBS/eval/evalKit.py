@@ -217,8 +217,9 @@ def IntervalSingleOverlapSeconds(ii1,ii2,normtype):
     return ov
 
 
-#if __name__ == '__main__':
+if __name__ == '__main__':
+    pr_all, ap_all, map = TH14evaldet('/home/gzn/code/FisherTensor/FisherTensor-MATLAB/eval/Run-det-gzn_20170924_frame.txt',
+                                       '../data/TH14_Temporal_Annotations_Test/annotations/annotation/', 'test')
+    # pr_all, ap_all, map = TH14evaldet('../results/Run-2-det.txt','../data/TH14evalkit/groundtruth/','val')
 
-#    pr_all, ap_all, map = TH14evaldet('../results/Run-2-det.txt','../data/TH14evalkit/groundtruth/','val')
-
-#    print map
+    print map

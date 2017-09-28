@@ -2,7 +2,7 @@ import sys
 
 
 import caffe
-from caffe.io import oversample
+from caffe.io import oversample, mirrorsample
 import numpy as np
 from utils.io import flow_stack_oversample, fast_list2arr
 import cv2
@@ -10,7 +10,7 @@ import cv2
 
 class CaffeNet(object):
 
-    def __init__(self, net_proto, net_weights, device_id, input_size=None):
+    def __init__(self, net_proto, net_weights, device_id, input_size=None, batch_size=None):
         caffe.set_mode_gpu()
         caffe.set_device(device_id)
         self._net = caffe.Net(net_proto, net_weights, caffe.TEST)
@@ -19,6 +19,8 @@ class CaffeNet(object):
 
         if input_size is not None:
             input_shape = input_shape[:2] + input_size
+            if batch_size is not None:
+                input_shape = batch_size + input_shape[1:]
 
         transformer = caffe.io.Transformer({'data': input_shape})
 
@@ -32,14 +34,17 @@ class CaffeNet(object):
 
         self._sample_shape = self._net.blobs['data'].data.shape
 
-    def predict_single_frame(self, frame, score_name, over_sample=True, multiscale=None, frame_size=None):
+    def predict_single_frame(self, frame, score_name, over_sample=True, multiscale=None, frame_size=None, multicrop=True):
 
         if frame_size is not None:
             frame = [cv2.resize(x, frame_size) for x in frame]
 
         if over_sample:
             if multiscale is None:
-                os_frame = oversample(frame, (self._sample_shape[2], self._sample_shape[3]))
+                if multicrop:
+                    os_frame = oversample(frame, (self._sample_shape[2], self._sample_shape[3]))
+                else:
+                    os_frame = mirrorsample(frame, (self._sample_shape[2], self._sample_shape[3]))
             else:
                 os_frame = []
                 for scale in multiscale:

@@ -16,8 +16,8 @@ sys.path.append(os.path.join(caffe_path, 'python'))
 from pyActionRecog.action_caffe import CaffeNet
 
 def build_net():
-    net_proto = '../../models/ucf101/tsn_bn_inception_rgb_deploy.prototxt'
-    net_weights = '../../models/ucf101_split_1_tsn_rgb_reference_bn_inception.caffemodel'
+    net_proto = '/home/gzn/code/repository/temporal-segment-networks/models/bn_inception_kinetics_rgb_pretrained/bn_inception_rgb_deploy.prototxt'
+    net_weights = '/home/gzn/code/repository/temporal-segment-networks/models/bn_inception_kinetics_rgb_pretrained/bn_inception_kinetics_rgb_pretrained.caffemodel'
     num_worker = 2
     gpu_list = [0, 1]
     global net
@@ -28,7 +28,7 @@ def build_net():
     else:
         net = CaffeNet(net_proto, net_weights, gpu_list[my_id - 1])
 
-def extract_cnn(videoName, fps_sample = 5.0, batch_size = 1, layer_name = 'inception_5b/output'):
+def extract_cnn(videoName, fps_sample = 5.0, batch_size = 1, layer_name = 'inception_5b/output', frame_max = None):
     global net
 
     cnn4v = []
@@ -51,6 +51,9 @@ def extract_cnn(videoName, fps_sample = 5.0, batch_size = 1, layer_name = 'incep
         if p_frame%step == 0:
             if frame is not None:
                 vData.append(frame)
+        if frame_max is not None:
+            if p_frame >= frame_max:
+                break
         p_frame+=1
 
     num_frame = len(vData)
@@ -70,7 +73,7 @@ def extract_cnn(videoName, fps_sample = 5.0, batch_size = 1, layer_name = 'incep
     # last batch
     if num_frame%batch_size:
         inputData = vData[(num_frame//batch_size)*batch_size:num_frame]
-        featMaps = net.predict_single_frame(inputData, layer_name, frame_size=(340, 256),
+        featMaps = net.predict_single_frame(inputData, layer_name, frame_size=(298, 224),
                                         over_sample=True, multicrop=False)
         if first:
             cnn4v = featMaps

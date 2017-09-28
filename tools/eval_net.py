@@ -3,6 +3,7 @@ import os
 import sys
 import math
 import cv2
+
 import numpy as np
 import multiprocessing
 from sklearn.metrics import confusion_matrix
@@ -10,6 +11,8 @@ from sklearn.metrics import confusion_matrix
 sys.path.append('.')
 from pyActionRecog import parse_directory
 from pyActionRecog import parse_split_file
+
+
 
 from pyActionRecog.utils.video_funcs import default_aggregation_func
 
@@ -94,7 +97,7 @@ def eval_video(video):
         if args.modality == 'rgb':
             name = '{}{:05d}.jpg'.format(args.rgb_prefix, tick)
             frame = cv2.imread(os.path.join(video_frame_path, name), cv2.IMREAD_COLOR)
-            scores = net.predict_single_frame([frame,], score_name, frame_size=(340, 256))
+            scores = net.predict_single_frame([frame,], score_name, frame_size=(340, 256), over_sample = True, multicrop = False)
             frame_scores.append(scores)
         if args.modality == 'flow':
             frame_idx = [min(frame_cnt, tick+offset) for offset in xrange(stack_depth)]

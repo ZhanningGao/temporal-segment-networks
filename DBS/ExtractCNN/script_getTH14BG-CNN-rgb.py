@@ -6,12 +6,12 @@ import multiprocessing
 sys.path.append('.')
 from extractCNNbyTSN import build_net, extract_cnn
 
-UCF20Path = '/data3_alpha/datasets/UCF-20-THUMOS14'
-UCF20_Feature_Path = '/data3_alpha/datasets/UCF20/CNNfeature-rgb-incep5a'
+UCF20Path = '/data/datasets/THUMOS14/videos'
+UCF20_Feature_Path = '/data3_alpha/datasets/THUMOS14/CNNfeature-rgb'
 
 
 num_worker = 2
-layerName = 'inception_5a/output'
+
 
 def file_path(file_dir):
     file_list = []
@@ -31,7 +31,7 @@ def process_video(file):
         os.makedirs(outputPath)
 
     if not os.path.isfile(os.path.join(outputPath,videoName+'.mat')):
-        cnn4v = extract_cnn(file, batch_size=64, layer_name=layerName)
+        cnn4v = extract_cnn(file, batch_size = 64, frame_max = 2000)
         sio.savemat(os.path.join(outputPath,videoName+'.mat'), {'cnn4v': cnn4v})
 
     print 'Video %s in class %s is done'%(videoName, className)
