@@ -8,12 +8,12 @@ for  i = 1:2% 'val' or 'test'
     
     tau = 1;
     
-    % EPmap path
-    EPPath = '/data3_alpha/datasets/TH14/EP-TSN/EP_E64W7Dim128_onInit';
-    
-    % extra data path
-    EXTPath = '/data3_alpha/datasets/UCF20/EP-TSN/EP_E64W7Dim128_var_0.1_init';
-    %BGPath = '/data3_alpha/datasets/TH14/BG-EP-TSN/EP_E32W7Dim128_onInit';
+%     % EPmap path
+%     EPPath = '/data3_alpha/datasets/TH14/EP-TSN/EP_E48W7Dim128_onInit_incep5a';
+%     
+%     % extra data path
+%     EXTPath = '/data3_alpha/datasets/UCF20/EP-TSN/EP_E48W7Dim128_var_0.1_init_incep5a';
+%     %BGPath = '/data3_alpha/datasets/TH14/BG-EP-TSN/EP_E32W7Dim128_onInit';
     
     % load EP data
     load(fullfile(EPPath,['TRUE', subset, '.mat']));
@@ -58,6 +58,7 @@ for  i = 1:2% 'val' or 'test'
         EPallset(i_vid).CGset = reshape(CGset, [Dim,E,E]);
         EPallset(i_vid).ql    = QL;
         EPallset(i_vid).EPmap = permute(single(EPmap), [3,2,1]);
+        EPallset(i_vid).mask  = permute(EPmaps(i_vid).mask,[2,1]);
         
         if mod(i_vid,10) == 0
             fprintf('%d th video done\n', i_vid);
@@ -110,6 +111,7 @@ for  i = 1:2% 'val' or 'test'
                     EPallset(end+1).CGset = reshape(CGset, [Dim,E,E]);
                     EPallset(end).ql    = QL;
                     EPallset(end).EPmap = permute(single(EPmap), [3,2,1]);
+                    EPallset(end).mask  = permute(EPmaps(i_vid).mask,[2,1]);
                     
                     if mod(i_vid,10) == 0
                         fprintf('%d th video done\n', i_vid);
@@ -172,6 +174,6 @@ for  i = 1:2% 'val' or 'test'
     end
     
     mkdir(fullfile(EPPath,'TrTe'));
-    save(fullfile(EPPath,'TrTe',['EP_' subset '.mat']), '-v7.3');
+    save(fullfile(EPPath,'TrTe',['EP_' subset '.mat']), 'EPallset', '-v7.3');
     
 end

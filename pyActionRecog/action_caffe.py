@@ -45,6 +45,40 @@ def mirrorsample(images, crop_dims):
         crops[ix-1:ix] = crops[ix-1:ix, :, ::-1, :]  # flip for mirrors
     return crops
 
+def flow_stack_mirrorsample(flow_stack, crop_dims):
+    """
+    This function performs oversampling on flow stacks.
+    Adapted from pyCaffe's oversample function
+    :param flow_stack: [flow, flow, ...] it is a list of N flow with KxHxW
+    :param crop_dims:
+    :return:
+    """
+    im_shape = np.array(flow_stack[0].shape[1:])
+    stack_depth = flow_stack[0].shape[0]
+    crop_dims = np.array(crop_dims)
+
+    h_center_offset = (im_shape[0] - crop_dims[0])/2
+    w_center_offset = (im_shape[1] - crop_dims[1])/2
+
+    crop_ix = np.empty((1, 4), dtype=int)
+
+    crop_ix[0, :] = [h_center_offset, w_center_offset,
+                     h_center_offset+crop_dims[0], w_center_offset+crop_dims[1]]
+
+    crop_ix = np.tile(crop_ix, (2,1))
+
+    crops = np.empty((2*len(flow_stack), stack_depth, crop_dims[0], crop_dims[1]),
+                     dtype=flow_stack[0].dtype)
+
+    ix = 0
+    for flow in flow_stack:
+        for crop in crop_ix:
+            crops[ix] = flow[:, crop[0]:crop[2], crop[1]:crop[3]]
+            ix += 1
+        crops[ix-1:ix] = crops[ix-1:ix, :, :, ::-1]  # flip for mirrors
+        crops[ix-1:ix, range(0, stack_depth, 2), ...] = 255 - crops[ix-1:ix, range(0, stack_depth, 2), ...]
+    return crops
+
 
 class CaffeNet(object):
 
@@ -108,6 +142,24 @@ class CaffeNet(object):
             os_frame = flow_stack_oversample(frame, (self._sample_shape[2], self._sample_shape[3]))
         else:
             os_frame = fast_list2arr([frame])
+
+        data = os_frame - np.float32(128.0)
+
+        self._net.blobs['data'].reshape(*data.shape)
+        self._net.reshape()
+        out = self._net.forward(blobs=[score_name,], data=data)
+        return out[score_name].copy()
+
+    def predict_flow_stack(self, frame, score_name, over_sample=True, frame_size=None):
+
+        if frame_size is not None:
+            frame = [cv2.resize(x.transpose(1,2,0), frame_size) for x in frame]
+            frame = [x.transpose(2,0,1) for x in frame]
+
+        if over_sample:
+            os_frame = flow_stack_mirrorsample(frame, (self._sample_shape[2], self._sample_shape[3]))
+        else:
+            os_frame = fast_list2arr(frame)
 
         data = os_frame - np.float32(128.0)
 

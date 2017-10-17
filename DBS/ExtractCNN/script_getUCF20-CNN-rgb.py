@@ -7,11 +7,11 @@ sys.path.append('.')
 from extractCNNbyTSN import build_net, extract_cnn
 
 UCF20Path = '/data3_alpha/datasets/UCF-20-THUMOS14'
-UCF20_Feature_Path = '/data3_alpha/datasets/UCF20/CNNfeature-rgb-incep5a'
+UCF20_Feature_Path = '/data3_alpha/datasets/UCF20/CNNfeature-rgb-kin'
 
 
 num_worker = 2
-layerName = 'inception_5a/output'
+layerName = 'inception_5a_output'
 
 def file_path(file_dir):
     file_list = []

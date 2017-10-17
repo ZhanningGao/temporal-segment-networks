@@ -6,7 +6,7 @@ subset = subset_all{i};
 tau = 2;
 
 % EPmap path
-EPPath = '/data3_alpha/datasets/TH14/EP-TSN/EP_E64W7Dim128_onInit';
+%EPPath = '/data3_alpha/datasets/TH14/EP-TSN/EP_E48W7Dim128_onInit_incep5a';
 
 % video info path
 video_info_path = '../data';
@@ -67,6 +67,9 @@ for i_vid = 1:num_vid
    mask(mask>0)=1;
    
    EPmap(:,:,end) = xor(ones(size(c_last)), c_last);
+   
+   % normalization
+   EPmap = EPmap./repmat(sum(EPmap,3),[1,1,num_class]);
    
    EPmaps(i_vid).EPmap = EPmap;
    EPmaps(i_vid).mask = mask;

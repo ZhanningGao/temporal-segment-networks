@@ -1,9 +1,9 @@
 % convert frame labels to EP map labels
 % updated by Zhanning Gao 09/10/2017 --- All for MT&G ---
 
-EPPath = '/data3_alpha/datasets/UCF20/EP-TSN/EP_E64W7Dim128_var_0.1_init';
+% EXTPath = '/data3_alpha/datasets/UCF20/EP-TSN/EP_E48W7Dim128_var_0.1_init_incep5a';
 
-mat_name = dir(fullfile(EPPath, '*.mat'));
+mat_name = dir(fullfile(EXTPath, '*.mat'));
 
 num_mat = length(mat_name);
 tau = 2;
@@ -11,7 +11,7 @@ tau = 2;
 for  i_mat = 1:num_mat
 
     % load EP data
-    load(fullfile(EPPath,mat_name(i_mat).name));
+    load(fullfile(EXTPath,mat_name(i_mat).name));
     
     num_vid = length(PIQL);
     num_class = 21;
@@ -60,6 +60,8 @@ for  i_mat = 1:num_mat
         
         EPmap(:,:,end) = xor(ones(size(c_last)), c_last);
         
+        EPmap = EPmap./repmat(sum(EPmap,3),[1,1,num_class]);
+        
         EPmaps(i_vid).EPmap = EPmap;
         EPmaps(i_vid).mask = mask;
         EPmaps(i_vid).E = E;
@@ -67,7 +69,7 @@ for  i_mat = 1:num_mat
         
     end
     
-    mkdir([EPPath, '/EPmaps']);
-    save([EPPath '/EPmaps/EPmaps_info_' mat_name(i_mat).name], 'EPmaps');
+    mkdir([EXTPath, '/EPmaps']);
+    save([EXTPath '/EPmaps/EPmaps_info_' mat_name(i_mat).name], 'EPmaps');
     
 end

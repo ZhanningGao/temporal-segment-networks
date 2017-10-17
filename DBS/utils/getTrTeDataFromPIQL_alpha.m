@@ -9,11 +9,11 @@ for  i = 1:2% 'val' or 'test'
     tau = 1;
     
     % EPmap path
-    EPPath = '/data3/datasets/TH14/EP-TSN/EP_E32W7Dim128_onInit';
+    EPPath = '/data3/datasets/TH14/EP-TSN/EP_E48W7Dim128_onInit_incep5a';
     
     % extra data path
-    EXTPath = '/data3/datasets/UCF20/EP-TSN/EP_E32W7Dim128_var_0.1_init';
-    BGPath = '/data3/datasets/TH14/BG-EP-TSN/EP_E32W7Dim128_onInit';
+    EXTPath = '/data3/datasets/UCF20/EP-TSN/EP_E48W7Dim128_var_0.1_init_incep5a';
+    %BGPath = '/data3/datasets/TH14/BG-EP-TSN/EP_E32W7Dim128_onInit';
     
     % load EP data
     load(fullfile(EPPath,['TRUE', subset, '.mat']));
@@ -118,8 +118,8 @@ for  i = 1:2% 'val' or 'test'
             end
         end
         
-        mat_name = dir(fullfile(BGPath,'*.mat'));
-        if ~isempty(mat_name)
+        %mat_name = dir(fullfile(BGPath,'*.mat'));
+        if 0%~isempty(mat_name)
             
             num_mat = length(mat_name);
             for i_mat = 1:num_mat
@@ -172,6 +172,6 @@ for  i = 1:2% 'val' or 'test'
     end
     
     mkdir(fullfile(EPPath,'TrTe'));
-    save(fullfile(EPPath,'TrTe',['EP_' subset '.mat']), '-v7.3');
+    save(fullfile(EPPath,'TrTe',['EP_' subset '.mat']), 'EPallset', '-v7.3');
     
 end

@@ -6,63 +6,133 @@ subset_all = [{'test'}, {'val'}];
 for  i = 1:2% 'val' or 'test'
     subset = subset_all{i};
     
-    tau = 1;
     
-    % EPmap path
-    EPPath = '/data3_alpha/datasets/TH14/EP-TSN/EP_E64W7Dim128_onInit';
-    
-    % extra data path
-    EXTPath = '/data3_alpha/datasets/UCF20/EP-TSN/EP_E6438tW7Dim128_var_0.1_init';
-    %BGPath = '/data3_alpha/datasets/TH14/BG-EP-TSN/EP_E32W7Dim128_onInit';
-    
-    % load EP data
-    load(fullfile(EPPath,['TRUE', subset, '.mat']));
-    
-    % load EPmaps
-    load([EPPath '/EPmaps_info_' subset '.mat']);
-    
-    % load PCAw mat
-    load(fullfile(EPPath,'PCAw_TH14_val_v2.mat'));
-    
-    num_vid = length(PIQL);
-    
-    alpha = 0.5;
-    Dim = 512;
-    
-    EPallset = [];
-    
-    for i_vid = 1:num_vid
+    if strcmp(subset, 'val')
+        tau = 1;
         
-        c_PIQL = PIQL{i_vid};
+        % load EP data
+        load(fullfile(EPPath,['TRUE', subset, '.mat']));
         
-        f_all = c_PIQL.frames;
+        % load EPmaps
+        load([EPPath '/EPmaps_info_' subset '.mat']);
         
-        E = c_PIQL.E;
-        W = c_PIQL.W;
-        Z = size(c_PIQL.pi,3);
+        % load PCAw mat
+        load(fullfile(EPPath,'PCAw_TH14_val_v2.mat'));
         
-        PI = reshape(permute(c_PIQL.pi,[3,2,1]), [Z, E*E]);
-        QL = permute(c_PIQL.ql,[3,2,1]);
+        num_vid = length(PIQL);
         
-        mask = reshape(permute(EPmaps(i_vid).mask,[2,1]),[1,E*E]);
-        mask = mask(ones(Dim,1),:);
+        alpha = 0.5;
+        Dim = 512;
         
-        CGset = PCAw_TH14(1:Dim,:)*bsxfun(@minus,yael_vecs_normalize(sign(PI).*abs(PI).^alpha),meanTH14);
-        
-        CGset = yael_vecs_normalize(CGset(1:Dim,:)).*mask;
-        
-        CGset(isnan(CGset))=0;
-        
-        EPmap = EPmaps(i_vid).EPmap;
-        
-        EPallset(i_vid).CGset = reshape(CGset, [Dim,E,E]);
-        EPallset(i_vid).ql    = QL;
-        EPallset(i_vid).EPmap = permute(single(EPmap), [3,2,1]);
-        
-        if mod(i_vid,10) == 0
-            fprintf('%d th video done\n', i_vid);
+        EPallset = [];
+        i_EP = 1;
+        for i_vid = 1:num_vid
+            
+            c_PIQL = PIQL{i_vid};
+            
+            f_all = c_PIQL.frames;
+            
+            E = c_PIQL.E;
+            W = c_PIQL.W;
+            Z = size(c_PIQL.pi{1},3);
+            
+            vid_list = c_PIQL.vid_list;
+            
+            num_list = size(vid_list,1);
+            
+            for j_v = 1:num_list
+                
+                PI = reshape(permute(c_PIQL.pi{j_v},[3,2,1]), [Z, E*E]);
+                QL = permute(c_PIQL.ql{j_v},[3,2,1]);
+                
+                mask = reshape(permute(EPmaps(i_vid).mask{j_v},[2,1]),[1,E*E]);
+                mask = mask(ones(Dim,1),:);
+                
+                CGset = PCAw_TH14(1:Dim,:)*bsxfun(@minus,yael_vecs_normalize(sign(PI).*abs(PI).^alpha),meanTH14);
+                
+                CGset = yael_vecs_normalize(CGset(1:Dim,:)).*mask;
+                
+                CGset(isnan(CGset))=0;
+                
+                EPmap = EPmaps(i_vid).EPmap{j_v};
+                
+                EPallset(i_EP).CGset = reshape(CGset, [Dim,E,E]);
+                EPallset(i_EP).ql    = QL;
+                EPallset(i_EP).EPmap = permute(single(EPmap), [3,2,1]);
+                EPallset(i_EP).mask  = permute(EPmaps(i_vid).mask{j_v},[2,1]);
+                i_EP = i_EP + 1;
+                
+                if mod(i_EP,10) == 0
+                    fprintf('%d th video done\n', i_EP);
+                end
+                
+            end
+            
         end
         
+    end
+    
+    if strcmp(subset, 'test')
+               % load EP data
+        load(fullfile(EPPath,['TRUE', subset, '.mat']));
+        
+        % load EPmaps
+        load([EPPath '/EPmaps_info_' subset '.mat']);
+        
+        % load PCAw mat
+        load(fullfile(EPPath,'PCAw_TH14_val_v2.mat'));
+        
+        num_vid = length(PIQL);
+        
+        alpha = 0.5;
+        Dim = 512;
+        
+        EPallset = [];
+        i_EP = 1;
+        for i_vid = 1:num_vid
+            
+            c_PIQL = PIQL{i_vid};
+            
+            f_all = c_PIQL.frames;
+            
+            E = c_PIQL.E;
+            W = c_PIQL.W;
+            Z = size(c_PIQL.pi{1},3);
+            
+            vid_list = c_PIQL.vid_list;
+            
+            num_list = size(vid_list,1);
+            
+            for j_v = num_list
+                
+                PI = reshape(permute(c_PIQL.pi{j_v},[3,2,1]), [Z, E*E]);
+                QL = permute(c_PIQL.ql{j_v},[3,2,1]);
+                
+                mask = reshape(permute(EPmaps(i_vid).mask{j_v},[2,1]),[1,E*E]);
+                mask = mask(ones(Dim,1),:);
+                
+                CGset = PCAw_TH14(1:Dim,:)*bsxfun(@minus,yael_vecs_normalize(sign(PI).*abs(PI).^alpha),meanTH14);
+                
+                CGset = yael_vecs_normalize(CGset(1:Dim,:)).*mask;
+                
+                CGset(isnan(CGset))=0;
+                
+                EPmap = EPmaps(i_vid).EPmap{j_v};
+                
+                EPallset(i_EP).CGset = reshape(CGset, [Dim,E,E]);
+                EPallset(i_EP).ql    = QL;
+                EPallset(i_EP).EPmap = permute(single(EPmap), [3,2,1]);
+                EPallset(i_EP).mask  = permute(EPmaps(i_vid).mask{j_v},[2,1]);
+                
+                i_EP = i_EP + 1;
+                
+                if mod(i_EP,10) == 0
+                    fprintf('%d th video done\n', i_EP);
+                end
+                
+            end
+            
+        end
     end
     
     if strcmp(subset, 'val')
@@ -110,6 +180,7 @@ for  i = 1:2% 'val' or 'test'
                     EPallset(end+1).CGset = reshape(CGset, [Dim,E,E]);
                     EPallset(end).ql    = QL;
                     EPallset(end).EPmap = permute(single(EPmap), [3,2,1]);
+                    EPallset(end).mask  = permute(EPmaps(i_vid).mask,[2,1]);
                     
                     if mod(i_vid,10) == 0
                         fprintf('%d th video done\n', i_vid);
@@ -172,6 +243,6 @@ for  i = 1:2% 'val' or 'test'
     end
     
     mkdir(fullfile(EPPath,'TrTe'));
-    save(fullfile(EPPath,'TrTe',['EP_' subset '.mat']), '-v7.3');
+    save(fullfile(EPPath,'TrTe',['EP_' subset '.mat']), 'EPallset', '-v7.3');
     
 end
